@@ -1,0 +1,337 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+    <div class="container">
+
+        <div class="card" style="margin-top: 50px">
+            <div class="card-header">商品上传</div>
+            <div class="card-cody">
+                {% csrf_token %}
+                <div class="row " style="margin-top: 20px">
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-1">
+                        <label for="validationCustom01" class="col-form-label">用户账号</label>
+
+                    </div>
+                    <div class="col-sm-3 ">
+                        <input type="text" class="col-sm-3 form-control" id="userAccount" name="userAccount" required>
+                    </div>
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-1">
+                        <label for="validationCustom01" class="col-form-label">商品名</label>
+                    </div>
+                    <div class="col-sm-3 ">
+                        <input type="text" class="form-control" id="projectTitle" name="projectTitle" required>
+                    </div>
+                    <div class="col-sm-1"></div>
+                </div>
+
+                <div class="row " style="margin-top: 20px">
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-1">
+                        <label class="col-form-label">商品简介</label>
+
+                    </div>
+                    <div class="col-sm-8">
+                        <textarea class="form-control" aria-label="With textarea" id="projectDesc"></textarea>
+                    </div>
+                    <div class="col-sm-2"></div>
+                </div>
+
+                <div class="row " style="margin-top: 20px">
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-1">
+                        <label for="validationCustom01" class="col-form-label">目标数量</label>
+
+                    </div>
+                    <div class="col-sm-3 ">
+                        <input type="text" class="col-sm-3 form-control" id="targetCount" name="targetCount" required>
+                    </div>
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-1">
+                        <label for="validationCustom01" class="col-form-label">目标时间</label>
+                    </div>
+                    <div class="col-sm-3 ">
+                            <input id="timepicker" name="endTime" type="text" class="form-control input-group bootstrap-timepicker timepicker">
+                    </div>
+                    <div class="col-sm-1"></div>
+                </div>
+
+                <div class="row " style="margin-top: 20px">
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-1">
+                        <label class="col-form-label">商品头像</label>
+                    </div>
+                    <div class="col-sm-3 ">
+                        <input type="file" class="form-control" id="productAvatar" name="productAvatar" accept="image/*">
+                    </div>
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-1">
+                        <label class="col-form-label">预览</label>
+                    </div>
+                    <div class="col-sm-3 ">
+                        <img id="avatarPreview" src="" alt="预览图片" style="max-width: 100px; max-height: 100px; display: none;">
+                    </div>
+                    <div class="col-sm-1"></div>
+                </div>
+
+                <div class="d-flex justify-content-center" style="margin-top: 20px; margin-bottom: 20px;">
+                    <button type="button" class="btn btn-primary btn-lg" id="upload_product">商品上传</button>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card" style="margin-top: 50px">
+            <div class="card-header">上传记录</div>
+            <div class="card-body">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>商品ID</th>
+                            <th>商品名</th>
+                            <th>商品简介</th>
+                            <th>目标数量</th>
+                            <th>当前数量</th>
+                            <th>开始时间</th>
+                            <th>结束时间</th>
+                            <th>状态</th>
+                            <th>进度</th>
+                            <th>商品图像</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="productTableBody">
+                        <!-- 数据将通过JavaScript动态加载 -->
+                        <tr>
+                            <td colspan="10" class="text-center">加载中...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">删除提醒</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="deleteRecipeId">
+                    您确认删除该食谱记录吗？
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="deleteRecipe">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+
+        // 关键：必须初始化日期时间选择器
+        $(document).ready(function(){
+            // 确保DOM加载完成后再初始化
+            $('#timepicker').datetimepicker({
+                format: 'yyyy-mm-dd',  // 设置日期格式，只选择日期
+                startView: 2,             // 开始视图为月视图
+                minView: 2,               // 最小视图为月视图
+                autoclose: true,             // 选择后自动关闭
+                todayBtn: true,              // 显示今天按钮
+                pickerPosition: 'bottom-right', // 选择器位置
+                language: 'zh-CN'            // 设置中文显示
+            });
+
+            // 可选：添加时间变更事件
+            $('#timepicker').on('changeDate', function(e) {
+                console.log('选择的日期：', e.date);
+            });
+
+            // 头像预览功能
+            $('#productAvatar').change(function() {
+                var file = this.files[0];
+                if (file) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#avatarPreview').attr('src', e.target.result);
+                        $('#avatarPreview').show();
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        });
+
+        $('#upload_product').click(function () {
+            var formData = new FormData();
+            // 添加CSRF令牌
+            var csrfToken = $('input[name=csrfmiddlewaretoken]').val();
+            formData.append('csrfmiddlewaretoken', csrfToken);
+    
+            formData.append('userAccount', document.getElementById('userAccount').value);
+            formData.append('projectTitle', document.getElementById('projectTitle').value);
+            formData.append('projectDesc', document.getElementById('projectDesc').value);
+            formData.append('targetCount', document.getElementById('targetCount').value);
+            formData.append('endTime', document.getElementById('timepicker').value);
+
+            // 添加头像文件
+            var avatarFile = document.getElementById('productAvatar').files[0];
+            if (avatarFile) {
+                formData.append('productAvatar', avatarFile);
+            }
+
+            // 这里应该有AJAX请求发送formData到服务器
+            // 例如使用$.ajax
+            $.ajax({
+                url: '/product/product_upload',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    console.log('上传成功', response);
+                    // 可以添加成功后的处理逻辑
+                    alert("上传成功！")
+                },
+                error: function(xhr, status, error) {
+                    console.error('上传失败', error);
+                    // 可以添加失败后的处理逻辑
+                    alert("上传失败！")
+                }
+            });
+        })
+
+        // 页面加载完成后获取商品列表
+        $(document).ready(function() {
+            // 调用product_list接口获取商品数据
+            $.getJSON('/product/product_list', function(response) {
+                if (response.status === 'ok') {
+                    var products = response.data;
+                    var tableBody = $('#productTableBody');
+                    tableBody.empty();
+
+                    if (products.length === 0) {
+                        tableBody.append('<tr><td colspan="11" class="text-center">暂无商品数据</td></tr>');
+                    } else {
+                        $.each(products, function(index, product) {
+                            // 处理商品图像显示
+                            var imageHtml = product.image ? '<img src="' + product.image + '" alt="商品图像" style="width: 80px; height: 80px; object-fit: cover;">' : '无图像';
+                            // 状态解释
+                            var statusText = '';
+                            switch (product.status) {
+                                case 0:
+                                    statusText = '未开始';
+                                    break;
+                                case 1:
+                                    statusText = '进行中';
+                                    break;
+                                case 2:
+                                    statusText = '已完成';
+                                    break;
+                                default:
+                                    statusText = '未知';
+                            }
+
+                            // 创建表格行
+                            var row = $('<tr>');
+                            row.append('<td>' + product.groupId + '</td>');
+                            row.append('<td>' + product.projectTitle + '</td>');
+                            row.append('<td>' + (product.projectDesc || '') + '</td>');
+                            row.append('<td>' + product.targetCount + '</td>');
+                            row.append('<td>' + product.currentCount + '</td>');
+                            row.append('<td>' + product.startTime + '</td>');
+                            row.append('<td>' + product.endTime + '</td>');
+                            row.append('<td>' + statusText + '</td>');
+                            row.append('<td>' + product.progress + '%</td>');
+                            row.append('<td>' + imageHtml + '</td>');
+                            row.append('<td><button class="btn btn-danger btn-sm delete-btn" data-id="' + product.groupId + '">删除</button></td>');
+                            tableBody.append(row);
+                        });
+
+                        // 使用事件委托绑定删除按钮事件
+                        $('#productTableBody').on('click', '.delete-btn', function() {
+                            var productId = $(this).data('id');
+                            if (confirm('确认删除ID为 ' + productId + ' 的商品吗？')) {
+                                // 发送AJAX请求删除商品
+                                $.ajax({
+                                    url: '/product/product_delete',
+                                    type: 'POST',
+                                    data: {
+                                        'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+                                        'productId': productId
+                                    },
+                                    success: function(response) {
+                                        if (response.status === 'ok') {
+                                            alert('删除成功');
+                                            // 刷新商品列表
+                                            location.reload();
+                                        } else {
+                                            alert('删除失败: ' + response.message);
+                                        }
+                                    },
+                                    error: function(xhr, status, error) {
+                                        alert('删除失败: ' + error);
+                                    }
+                                });
+                            }
+                        });
+                    }
+                } else {
+                    console.error('获取商品列表失败:', response.message);
+                    $('#productTableBody').html('<tr><td colspan="10" class="text-center text-danger">获取数据失败: ' + response.message + '</td></tr>');
+                }
+            }).fail(function(xhr, status, error) {
+                console.error('获取商品列表失败:', error);
+                $('#productTableBody').html('<tr><td colspan="10" class="text-center text-danger">网络错误，无法获取数据</td></tr>');
+            });
+
+            // 上传成功后刷新商品列表
+            // 修改上传按钮的success回调函数
+            var originalUploadSuccess = $.ajaxSettings.success;
+            $('#upload_product').off('click').click(function() {
+                var formData = new FormData();
+                // 添加CSRF令牌
+                var csrfToken = $('input[name=csrfmiddlewaretoken]').val();
+                formData.append('csrfmiddlewaretoken', csrfToken);
+
+                formData.append('userAccount', document.getElementById('userAccount').value);
+                formData.append('projectTitle', document.getElementById('projectTitle').value);
+                formData.append('projectDesc', document.getElementById('projectDesc').value);
+                formData.append('targetCount', document.getElementById('targetCount').value);
+                formData.append('endTime', document.getElementById('timepicker').value);
+
+                // 添加头像文件
+                var avatarFile = document.getElementById('productAvatar').files[0];
+                if (avatarFile) {
+                    formData.append('productAvatar', avatarFile);
+                }
+
+                $.ajax({
+                    url: '/product/product_upload',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        console.log('上传成功', response);
+                        alert('上传成功！');
+                        // 刷新商品列表
+                        location.reload();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('上传失败', error);
+                        alert('上传失败！');
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
+

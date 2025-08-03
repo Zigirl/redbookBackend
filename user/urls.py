@@ -1,9 +1,11 @@
 from django.urls import path, include
 
-from user.views import user_add, user_delete, user_update, user_list
+from user.views import user_add, user_delete, user_update, user_list, index, login
 
 urlpatterns = [
 
+    path('', index),
+    path('login',login),
     path('user_add', user_add),
     path('user_delete', user_delete),
     path('user_update', user_update),

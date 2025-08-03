@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" style="height: 100%">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{% static 'plugins/bootstrap-5.3.3-dist/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'plugins/bootstrap-datetimepicker-master/css/bootstrap-datetimepicker.css' %}">
+</head>
+<body style="height: 100%;">
+
+
+<div>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+            {#            <a class="navbar-brand" href="#">Navbar</a>#}
+            <h1>拼团商城后台管理系统</h1>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+                    aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                {#                <span class="navbar-toggler-icon"></span>#}
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav">
+                    {#                    <a class="nav-link active" aria-current="page">Home</a>#}
+
+                    <a class="nav-link active" href="/recipe/recipe_list" style="margin-left: 50px;font-size: larger">产品上传</a>
+                    <a class="nav-link active" href="/user/user_list" style="font-size: larger">用户管理</a>
+                </div>
+            </div>
+            <a class="nav-link active" href="/layout" style="margin-left: auto;margin-right: 100px; font-size: larger">注销</a>
+
+        </div>
+    </nav>
+    {% block content %}
+
+    {% endblock %}
+</div>
+
+<script src="{% static 'js/jquery-3.7.1.js' %}"></script>
+<script src="{% static 'plugins/bootstrap-5.3.3-dist/js/bootstrap.bundle.js' %}"></script>
+<script src="{% static 'plugins/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.js' %}"></script>
+<script src="{% static 'plugins/bootstrap-datetimepicker-master/js/locales/bootstrap-datetimepicker.zh-CN.js' %}"></script>
+{% block js %}
+{% endblock %}
+</body>
+</html>
