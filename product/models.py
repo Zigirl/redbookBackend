@@ -4,7 +4,7 @@ from django.db import models
 class Product(models.Model):
 
     groupId = models.AutoField(primary_key=True)
-    userId = models.IntegerField(blank=False, null=False)
+    userId = models.IntegerField(default=0)
     projectTitle = models.CharField(max_length=100)
     projectDesc = models.TextField()
     image = models.ImageField(upload_to="productImages")
@@ -14,3 +14,4 @@ class Product(models.Model):
     endTime = models.DateTimeField()
     status = models.IntegerField(default=0)
     progress = models.IntegerField(default=0)
+

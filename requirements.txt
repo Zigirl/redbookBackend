@@ -1,0 +1,6 @@
+# Django核心框架
+Django==4.2.13
+
+# MySQL数据库驱动
+PyMySQL==1.1.0
+Pillow==10.0.1

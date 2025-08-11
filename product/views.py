@@ -5,6 +5,7 @@ from .models import Product
 from user.models import UserInfo
 from django.utils import timezone
 import datetime
+import json
 from django.http import JsonResponse
 
 
@@ -119,6 +120,49 @@ def product_list(request):
             return JsonResponse({'status': 'ok', 'data': product_list})
         except Exception as e:
             print(f"查询商品失败: {str(e)}")
+            return JsonResponse({'status': 'error', 'message': str(e)})
+    else:
+        return JsonResponse({'status': 'error', 'message': '不支持的请求方法'})
+
+
+# 根据groupId查询单个产品
+@csrf_exempt
+def product_detail(request):
+    if request.method == 'POST':
+        try:
+            # 解析JSON请求体
+            try:
+                data = json.loads(request.body)
+                group_id = data.get('groupId')
+            except json.JSONDecodeError:
+                return JsonResponse({'status': 'error', 'message': '无效的JSON格式'})
+            
+            if not group_id:
+                return JsonResponse({'status': 'error', 'message': '缺少groupId参数'})
+            
+            # 查询指定的产品
+            product = Product.objects.get(groupId=group_id)
+            
+            # 将产品数据转换为JSON格式
+            product_data = {
+                'groupId': product.groupId,
+                'userId': product.userId,
+                'projectTitle': product.projectTitle,
+                'projectDesc': product.projectDesc,
+                'targetCount': product.targetCount,
+                'currentCount': product.currentCount,
+                'startTime': product.startTime.strftime('%Y-%m-%d %H:%M:%S'),
+                'endTime': product.endTime.strftime('%Y-%m-%d'),
+                'status': product.status,
+                'progress': product.progress,
+                'image': product.image.url if product.image else None
+            }
+            
+            return JsonResponse({'status': 'ok', 'data': product_data})
+        except Product.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': '产品不存在'})
+        except Exception as e:
+            print(f"查询产品详情失败: {str(e)}")
             return JsonResponse({'status': 'error', 'message': str(e)})
     else:
         return JsonResponse({'status': 'error', 'message': '不支持的请求方法'})
